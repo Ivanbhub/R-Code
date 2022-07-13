@@ -1,0 +1,255 @@
+---
+title: "Life Expectancy"
+
+output: 
+  flexdashboard::flex_dashboard:
+    theme: sandstone
+---
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(gapminder)
+library(ggplot2)
+library(plotly)
+
+library(sqldf)
+
+```
+
+ 
+
+```{r}
+df <- gapminder
+df <- as.data.frame(df)
+```
+
+
+
+
+
+1952 Life Expectancy Disparity
+==================
+Comments :
+
+- All 5 countries with a good life expectancy are developed European countries
+
+- All 5 countries with a very low life expectancy are third world countries, four of them being from Africa
+
+- The highest life expectancy is 73 while the lowest is 29, that is a 44 years difference
+
+
+```{r}
+life_exp_1952 = df[df$year ==1952,]
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+```{r}
+sorted_life_exp_1952 = life_exp_1952[order(life_exp_1952$lifeExp),]
+
+plot_sorted_life_exp_1952 <- sorted_life_exp_1952[c(1:5, 138:142) ,]
+
+plot_sorted_life_exp_1952
+
+```
+
+```{r}
+
+# customizing  plotly tooltip 
+Country = reorder(plot_sorted_life_exp_1952$country,plot_sorted_life_exp_1952$lifeExp) 
+Life_Expectancy = plot_sorted_life_exp_1952$lifeExp 
+
+# ggplot
+
+plot_1 <- ggplot(data =plot_sorted_life_exp_1952, 
+                 )+
+  geom_bar(aes(x = Country,y=Life_Expectancy, fill=Life_Expectancy), stat='identity',)+
+  scale_fill_continuous(low="olivedrab2", high="olivedrab4")+
+  xlab('Country')+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) #rotate x axis
+
+#converting to an interactive plot
+plotly_1 = ggplotly(plot_1, tooltip = c('x','y')) 
+
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### 1952 Life Expectancy Disparity (interactive chart)
+
+```{r}
+plotly_1
+```
+
+
+2007 Life Expectancy Disparity
+==================
+Comment :
+
+- With the advancement in Science and Technology the life expectancy increased overall compared to 1952
+
+- Unlike the 50's, the top 5 countries with the highest life expectancy are not all European. 2 of them are from are from Asia, 2 from Europe, and Australia 
+
+- Although life expectancy has doubled in Africa, all 5 countries with the lowest life expectancy are from Africa
+
+```{r}
+life_exp_2007 = df[df$year ==2007,]
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+```{r}
+sorted_life_exp_2007 = life_exp_2007[order(life_exp_2007$lifeExp),]
+
+plot_sorted_life_exp_2007 <- sorted_life_exp_2007[c(1:5, 138:142) ,]
+
+plot_sorted_life_exp_2007
+
+```
+```{r}
+
+# customizing  plotly tooltip 
+Country = reorder(plot_sorted_life_exp_2007$country,plot_sorted_life_exp_2007$lifeExp) 
+Life_Expectancy = plot_sorted_life_exp_2007$lifeExp 
+
+# ggplot
+
+plot_2 <- ggplot(data =plot_sorted_life_exp_2007, 
+                 )+
+  geom_bar(aes(x = Country,y=Life_Expectancy, fill=Life_Expectancy), stat='identity',)+
+  scale_fill_continuous(low="olivedrab2", high="olivedrab4")+
+  xlab('Country')+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) #rotate x axis
+
+#converting to an interactive plot
+plotly_2 = ggplotly(plot_2, tooltip = c('x','y')) 
+
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### 2007 Life Expectancy Disparity (interactive chart)
+
+```{r}
+plotly_2
+```
+
+
+
+Top 5 Countries (population)
+==================
+
+Comments :
+
+- All countries life expectancy rose steadily from 1952 to 2007 
+
+- China life expectancy decreased significantly from 1958 up until 1962. This sharp drop is due to The Great Chinese Famine that lasted 3 years(1959 and 1961 ) (source: https://en.wikipedia.org/wiki/Great_Chinese_Famine)
+
+```{r}
+
+df_2007_filter = df[df$year==2007,]
+```
+
+
+
+
+
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+```{r}
+top_5 <- df[df$country
+   %in%
+     list(
+          df_2007_filter[
+                order(-df_2007_filter$pop),][1:5,][,'country'])[[1]],]
+
+top_5
+```
+
+
+Column {data-width=850}
+-----------------------------------------------------------------------
+
+### Life expectancy change (interactive chart)
+
+```{r}
+plot_3 <- ggplot(data=top_5 )+
+  geom_line(aes(x=year,y=lifeExp, group=country, color=country))+
+  geom_point(aes(x=year,y=lifeExp, group=country,), size=0.09)+
+  scale_color_manual(values=c('Orange3','Red3','Green3','Yellow3','Blue3')) 
+
+ggplotly(plot_3)
+```
+
+Continents life expectancy change  (1952-2007)
+==================
+
+Comments :
+
+
+As you can see from the plot below, life expectant has steadily increase for all 5 continents. 
+It's also apparent the richer the continent the higher the life expectancy. 
+
+```{r}
+
+df1 = df[df$year==2007,]
+
+pop_2007 <- df1[order(-df1$pop),][1:5]
+```
+
+
+
+
+
+```{r}
+continents <- sqldf("SELECT continent,year,pop, AVG(lifeExp) as lifeExp 
+      FROM df
+      GROUP BY year,continent
+    ")
+
+```
+
+```{r}
+
+Continent = as.factor(continents$continent)
+plot_4 <- ggplot(data = continents)+
+  geom_line(aes(x=year, y= lifeExp , group = Continent,color=Continent))+
+  
+  geom_point(aes(x=year, y= lifeExp,group = Continent), size=0.09)+
+  scale_color_manual(values=c('Green3','Yellow3','Blue3','Red3','Orange3')) 
+
+plotly_4 = ggplotly(plot_4, tooltip = c('x','y','group'))
+
+  
+```
+
+
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+```{r}
+continents
+```
+
+
+Column {data-width=850}
+-----------------------------------------------------------------------
+
+### life expectancy change  (1952-2007) (interactive chart)
+
+```{r}
+plotly_4
+```
+
+
+
+
+
