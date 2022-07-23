@@ -1,0 +1,115 @@
+---
+title: "Principal Component Analysis"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+library(ggplot2)
+library(ggbiplot)
+
+```
+```{r}
+df <- read.table("cereals.txt", header=T )
+```
+
+```{r}
+head(df)
+```
+
+## Let's take a look at the dataset
+
+
+```{r}
+
+summary(df)
+```
+
+  - We have no missing values. 
+  
+  - Because PCA works best with numerical data, I'll exclude all the categorical columns for now. 
+    the categorical columns are : name,mfr,type
+  
+  
+```{r}
+no_cat_df = df[,-c(1:3)]
+
+summary(no_cat_df)
+
+```
+
+
+# PCA
+  
+```{r}
+df.pca <- prcomp(no_cat_df, center = TRUE,)
+
+summary(df.pca)
+
+```
+
+
+
+```{r}
+df.pca$rotation
+```
+
+
+
+
+```{r}
+
+ggbiplot(df.pca)
+```
+
+
+Running PCA without scaling we can see the first principal component is dominated by the sodium content in the cereal. On the other hand, the second principal component seems to be measuring the amount of potassium. However, the problem with this output is that sodium and potassium are measured in milligrams while other nutrients are in grams.This gives the two nutrients a much larger variance than the other variables. The solution would be to normalize our dataset before running PCA, that way we give all variable equal importance in terms of variability.
+
+
+
+# PCA on scaled data
+
+```{r}
+scaled_df.pca <- prcomp(no_cat_df, scale. = TRUE)
+
+summary(scaled_df.pca)
+
+```
+```{r}
+scaled_df.pca$rotation
+```
+
+- The first two components account for 52% of Proportion of Variance. Reducing the number of components to just two would mean losing a lot of information. 
+
+
+# PCA Plot
+
+```{r}
+ggbiplot(scaled_df.pca ,ellipse = TRUE, groups = df$type)+labs(title='Hot and cold cerels',color="Hot / Cold")+
+scale_color_manual(values=c("blue4", "red"))+ theme(plot.title = element_text(hjust = 0.5))+ geom_hline(yintercept=0)+geom_hline(yintercept=0)+ geom_vline(xintercept=0)
+```
+
+## intepreting the graph 
+- we have very few outliers
+
+- fat and weight have large positive loadings on component 2.
+- sodium has the largest positive loading on component 1
+
+- Some strong correlations are: 
+    - vitamins, sugars and calories
+    - fat and weight
+    -carbo and cups
+    - fiber and protein 
+    
+- Hot cereals are clustered 
+
+
+### PLot with "groups" as the classifier :
+```{r}
+ggbiplot(scaled_df.pca ,ellipse = TRUE, groups = df$mfr)
+```
