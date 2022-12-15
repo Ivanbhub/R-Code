@@ -1,0 +1,413 @@
+---
+title: "Basics"
+author: "Ivan Bayingana"
+date: "2022-12-15"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(plotly)
+```
+
+#### Reference: 
+https://sites.google.com/site/modernprogramevaluation/home#TOC-Variance
+
+
+#  Regression Review
+
+## Variance
+
+
+**formula **
+ 
+ 
+$$
+Variance =\frac{ \sum_{i = 1}^{n}{(x_i - \bar{x})^2}}{n-1}
+$$
+ 
+ 
+
+Variance is a measure of average dispersion. It’s the average squared deviation
+from the mean of the distribution. So you add up all the distances. The problem
+is that when you use the mean then the sum of all distances from the mean will
+always be zero. As a result, you must square them first. Divide by n-1 so you
+have an average squared distance from the mean. 
+
+
+
+```{r}
+# formula = 
+# sum(x-mean(x)^2)/n-1
+
+even = c(2,4,6,8,10,12,14,16)
+
+even_sums = c()
+for(i in seq(1,length(even))){
+  #x-mean(x)^2
+ even_sums = append(even_sums,(even[i]-mean(even))^2)
+  
+}
+
+# sum(x-mean(x)^2)/n-1
+print(sum(even_sums)/(length(even)-1))
+var(even)
+```
+
+
+
+The **main limitation** of the variance is that it is measured in squared units.
+So it doesn’t make a lot of sense.
+**To avoid this problem, standard deviation is used as the most common**
+**measure of dispersion.** 
+
+
+
+
+## Standard Deviation
+
+
+**formula **
+ 
+ 
+$$
+Standard Deviation = \sqrt{\frac{ \sum_{i = 1}^{n}{(x_i - \bar{x})^2}}{n-1}}- or - \sqrt{Variance}
+$$
+
+
+Standard deviation is another **measure of dispersion**. It means: 
+on "average", how far is the data from the mean.
+
+The term "average" is in quotes because it is not a true average, but rather 
+squaring the distances and then later taking the square root. This is done for 
+mathematical reasons and
+**gives an approximation of the average distance, but it is not exact. **
+
+
+
+```{r}
+even
+```
+
+
+```{r}
+## standard dev is just the sqrt of var
+
+# sum((x-mean(x))^2)/(length(even)-1))
+even_sums = c()
+for(i in seq(1,length(even))){
+  
+  # apending squared differences: (x-mean(x))^2
+ even_sums = append(even_sums,(even[i]-mean(even))^2)
+  
+}
+
+# sum((x-mean(x))^2)/(length(even)-1))
+
+print('variance :' )
+print(sum(even_sums)/(length(even)-1))
+var(even)
+
+print('standard dev:' )
+print(sqrt(sum(even_sums)/(length(even)-1)))
+sd(even)
+
+```
+
+```{r}
+sd(even) == sqrt(var(even))
+```
+
+
+
+#### why do we divide by n-1 ? because we're using the sample
+mean and not the population mean. 
+
+long answer:   
+https://docs.google.com/spreadsheets/d/1hNRMXFO-Mg2FggDZtqSmmVieYJk286Fk/edit?usp=sharing&ouid=109200175216383795279&rtpof=true&sd=true
+
+
+
+
+
+## Covariance
+
+ **formula **
+ 
+$$
+Covariance = \frac{ \sum{(x_i - \bar{x}) * (y_i - \bar{y})}}{n-1}
+$$
+
+
+
+Covariance is a measure of correlation between two random variables.
+However, it's a raw measure. That is, the range can be from a very large 
+negative number to a very large positive number versus negative 
+one to positive one.
+
+
+```{r}
+x = rnorm(6, mean=-40, sd=10)
+
+y = rnorm(6, mean=40, sd=10)
+
+df = data.frame(x,y)
+
+ggplot(data = df, aes(x=x,y=y))+
+  geom_point()+
+  ggtitle(paste('Covariance is',round(cov(x,y),2)))+
+  geom_smooth(method='lm', formula= y~x, se=FALSE)+
+geom_hline(yintercept = mean(df$y),color='red')
+```
+
+### how is it calculated?
+
+LETS LOOK AT AN EXAMPLE 
+
+```{r}
+df
+```
+
+
+
+
+```{r}
+paste('mean of x:',round(mean(x)))
+
+paste('mean of y:',round(mean(y)))
+
+```
+
+
+```{r}
+# sum((y-mean(y))*(x-mean(x)))/ n-1
+
+# product of the two mean differences 
+
+prod_of_x_y_mean_diff=c()
+for (i in seq(1,nrow(df))){
+  prod_of_x_y_mean_diff = append(prod_of_x_y_mean_diff, 
+                                 ((df[i,'x']-mean(x)) * (df[i,'y']-mean(y)))
+                                 )
+  
+}
+
+# sum and divide by n-1
+
+paste('the covariance of x and y is ', 
+      sum((prod_of_x_y_mean_diff))/(nrow(df)-1))
+cov(x,y)
+
+
+```
+
+As you can see the covariance can be a very large number which can 
+be hard to interpret.
+the corr on the other hand is between -1 and 1,which is easier to interpret. 
+
+## Correlation
+
+
+
+ **Long formula **
+ 
+$$
+Correlation =\frac{ \frac{ \sum{(x_i - \bar{x}) * (y_i - \bar{y})}}{n-1}}{\sqrt{\frac{ \sum{(x_i - \bar{x})^2}}{n-1}} * \sqrt{\frac{ \sum{(y_i - \bar{y})^2}}{n-1}}} 
+$$
+
+
+ **Short formula **
+ 
+$$
+Correlation =\frac{ Covariance(x,y)}{SD(x)*SD(y)}
+$$
+
+ 
+Much like covariance, correlation coefficient measures the correlation between
+two random variables. However, it is a standardized covariance so that it is 
+easy to interpret (think of it as the covariance in percentage terms).
+It ranges from negative one (perfect negative relationship) to positive
+one (positive perfect relationship). The closer to zero the coefficient is, the
+weaker the relationship between the two variables. The further from zero, the 
+stronger the relationship.
+
+
+```{r}
+x = rnorm(60, mean=40, sd=10)
+
+y = rnorm(60, mean=rnorm(1, sd = 100), sd=10)
+
+df_corr = data.frame(x,y)
+
+ggplot(data = df_corr, aes(x=x,y=y))+
+  geom_point()+
+  ggtitle(paste('Correlation is',round(cor(x,y),2)))+
+  geom_smooth(method='lm', formula= y~x,se=FALSE)+
+geom_hline(yintercept = mean(df_corr$y),color='red')
+```
+
+### how is it calculated?
+
+LETS LOOK AT AN EXAMPLE 
+```{r}
+head(df_corr)
+```
+
+```{r}
+
+# corr = cov(x,y)/ (sd(x)*sd(y))
+
+
+(cov(df_corr['x'],df_corr['y'])) / ( sd(unlist(df_corr['x'])) * sd(unlist(df_corr['y'])) )
+
+
+
+cor(df_corr)
+```
+
+
+
+## Sampling distribution of the mean
+
+
+Each statistic that we calculate with data will have something
+called a sampling distribution.
+This simply means that if we draw several samples from the same
+population, then calculate the same statistic, it will be slightly different 
+depending on the sample.
+
+let's say we have this as our population : 
+
+```{r}
+population = c(1,2,3,4,5,6,7,8,9,10)
+
+paste('Mean of population is', mean(population))
+
+```
+
+Then we draw a sample of size four from the population:
+
+```{r}
+#take a sample from population
+paste('1st Sample from population',list(sample(population,4)))
+paste('mean of 1st sample is', mean(sample(population,4)))
+
+paste('2nd Sample from population',list(sample(population,4)))
+paste('mean of 2nd sample is', mean(sample(population,4)))
+```
+
+We see from this that we will not get the exact same answer each time for the 
+sample mean, but the answers will follow a specific pattern.
+HINT: it likes the population mean
+
+**Red dotted line = population mean **
+**Blue dotted line = Samples mean **
+
+```{r}
+sample_means=c()
+for(i in seq(0,300)){
+  sample_means = append(sample_means, mean(sample(population,4)))
+}
+
+hist_plot = hist(sample_means, breaks = 10,
+                 main="Distribution of the sample means")
+abline(v=mean(population), col='red', lty=2, lwd=5)
+abline(v=mean(sample_means), col='blue', lty=2, lwd=5)
+text(hist_plot$mids,hist_plot$counts,
+     labels=hist_plot$counts, adj=c(0.3, -0.01))
+
+```
+
+**notice how it tends to fall close to the population mean **
+
+This distribution is called the **sampling distribution of the mean**.
+The sampling distribution is a very important concept in statistics because it  
+allows us to make powerful inferences about populations by having
+*limited information available via the sample*. 
+
+This is useful, as the research never knows which mean in the sampling 
+distribution is the *same* as the population mean, but by selecting many 
+random samples from a population the sample means will cluster together, 
+allowing the research to make a very good *estimate* of the population mean
+
+### Standard Error
+
+
+*The standard deviation* of the sample means is called the **Standard error** 
+
+the *standard deviation* quantifies the variation around the mean within 
+one sample or one set of measurement
+
+**Standard error** quantifies the variation within multiple samples mean,
+or multiple sets of measurements.
+
+```{r}
+sd(sample_means)
+```
+
+  -It's the **the standard deviation sampling distribution**
+  -It's the **standard deviations of the sample means of means.**
+  -It's the **standard deviation of the MEANS of samples**
+  -It's the **how do means of samples varies around their own mean**
+
+
+
+so if you take multiple sample and calculate and plot their means, 
+just like we did above, and then find their standard deviation,you've also found
+the Standard error. 
+
+
+the confusing part is that you can also estimate the standard error for one set
+even if you are given one sample or a single set of measurement, even though the 
+Standard error describes the means from multiple sets. 
+
+One last time 
+
+**the Standard Error gives us the average error that we can expect**
+from a statistic, how far will our best guess (the sample statistic)
+be from the truth (the population parameter).
+
+*Inferential statistics rely on this relationship*. 
+For example, if we have a *random sample of the population*, we can interview 
+*a couple of thousand people* in an exit poll and predict the winner even when 
+*millions of people* voted in the election.
+We can take a sample for quality control purposes and know whether expensive
+machinery needs to be replaced or can continue in use.
+
+
+
+In summary, the sampling distribution is the theoretical distribution that you
+would get if you took every possible sample of size n and calculated the 
+statistic. The Central Limit Theorem gives us **the standard deviation** of the
+**sampling distribution**, **the standard error**, for free if we can only 
+afford to  collect one sample (which is usually the case).
+
+
+**Standard Error formula **
+
+
+ 
+$$
+Standard Error =\frac{ SD(x)}{sqrt(n)}
+$$
+rework this using the sample above 
+
+```{r}
+#install.packages("plotrix")
+x_se = rnorm(n = 5, mean = 10)
+x_se
+
+paste('mean is:',(mean(x_se)))
+paste('Standard deviation is' , sd(x_se))
+
+paste('Standard Error is(manual) :',sd(x_se)/sqrt(length(x_se)))
+paste('Standard Error is :',plotrix::std.error(x_se))
+
+```
