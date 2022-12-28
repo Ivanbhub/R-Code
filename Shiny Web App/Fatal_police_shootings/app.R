@@ -150,14 +150,12 @@ server <- function(input, output) {
 output$Race_comment <-renderText({
   "
   Date: 8/5/2022
- There is no doubt that the police are more likely to shoot white people than 
- other race. As you can see from the graph above, in the last 8 years, 3180 
- white people were killed by police officers. In comparison, 1674 black people
- and 1127 Hispanics were killed by police officers over this same period of time.
- One can make a claim that these numbers would tell a different story if we were
- to compare them in terms of racial and ethnic population percentage.
- However, I believe these deaths shouldn't mean less just because they represent
- a smaller percentage of the race they're associated with.
+There is a clear disparity in the number of white, black, and Hispanic 
+individuals killed by police officers in the past eight years. 
+While 3180 white people were killed, 1674 black people and 1127 Hispanics were 
+also killed. It is important to consider the population percentages of these
+races, but it is also crucial to recognize that every life lost to police
+violence is significant and should be treated with equal gravity.
   "
 })
 
@@ -183,11 +181,11 @@ output$Gender_comment <-renderText({
   "
   Date: 8/5/2022
   
- The statistics show that men are 21 times more likely to get shot by police 
- than women. One reason might be that the police see males as being more likely
- to be violent and aggressive, so they may perceive them as a greater threat. 
- A little more digging is necessary to understand why there is such a big
- disparity.
+ According to the data, men are significantly more likely to be shot by police 
+ than women. This alarming statistic may be due to the perception that males
+ are more prone to violence and aggression, leading the police to view them 
+ as a greater threat. Further investigation is necessary to fully understand
+ the reasons behind this significant gender disparity in police shootings.
   "
 })
   
@@ -263,10 +261,12 @@ The graph above shows that the majority police shootings victims were not fleein
 output$Age_comment <-renderText({
   "
   
-The chart above shows that most victims of police shootings are between the
-ages of 20 and 40. I think this is because officers are more likely to perceive 
-a young person as a greater threat than an older person, and therefore perceive 
-them as more aggressive.
+The data displayed on the chart illustrates that the majority of individuals
+who are fatally shot by law enforcement officers are within the ages of 20 and 
+40. It is likely that this statistic is influenced by the tendency of officers
+to view younger individuals as more dangerous and potentially aggressive 
+compared to older individuals. This perceived threat may lead to a higher
+incidence of police shootings in this age range.
   "
 })
 
@@ -338,15 +338,13 @@ output$City_comment <-renderText({
   "
   
 Date: 8/5/2022  
-The graph above shows the top 10 cities with the most police shooting victims.
-Los Angeles comes in first position with 125 total police shooting victims the 
-last 8 years, that's an average of 15 per year and at least one per month.
-As of today, Los Angeles has 10 victims and it's only August. Going back to each
-of the last 8 years, I noticed that Los Angeles has never had a year with single
-digit police shooting victims. 
-Phoenix comes is second place with 101 police shooting victims, and in 2018 it 
-had a record high of 23 victims in a single year, that's more than any other
-city in the US in the same span of time. 
+The data depicted in the graph demonstrates the top 10 cities with the highest
+number of police shooting victims over the past 8 years. Los Angeles holds the
+top spot, with a total of 125 victims, averaging 15 per year and at least one
+per month. In fact, Los Angeles has not experienced a single year with single 
+digit police shooting victims in this time period. Phoenix holds the second
+highest number of victims at 101, with a record high of 23 victims in 2018,
+the highest of any city in the United States during this time frame. 
   "
 })
 
