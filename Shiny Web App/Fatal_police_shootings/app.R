@@ -68,7 +68,7 @@ ui <- fluidPage(
       
       navbarPage( "Police Shooting",
                   
-                  tabPanel("Map",leafletOutput("map_plot",height = "600px")),
+                  tabPanel("Map",leafletOutput("map_plot",height = "600px"),verbatimTextOutput("Map_comment")),
                   tabPanel("Threat Level",plotlyOutput("threat_type_plot",height = "600px"),verbatimTextOutput("Threat_comment")),
                   tabPanel("Gender",plotOutput("gender_plot",height = "600px"),verbatimTextOutput("Gender_comment")),
                   tabPanel("Table",DT::dataTableOutput('table1')),
@@ -134,6 +134,13 @@ server <- function(input, output) {
     
     
   })  
+  
+  output$Map_comment <-renderText({
+    "Zoom in to explore the map and access additional points for interaction. 
+To filter by year, simply use the filter tab located on the left side of the screen.
+  "
+  })
+  
   
   
   #------------------------------------------------------------------------------ 
