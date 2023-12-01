@@ -1,5 +1,3 @@
-
-
 library(shiny)
 library(leaflet)
 library(shinyWidgets)
@@ -30,6 +28,10 @@ df$desc[df$threat_type == 'flee'] <- 'The victim was fleeing'
 df[df$city=='Harrison Township',][,c('longitude')]=-84.191
 df[df$city=='Harrison Township',][,c('latitude')] = 39.808
 
+# Filter out rows with invalid latitude and longitude
+df <- df[!((df$latitude < -90 | df$latitude > 90) | (df$longitude < -180 | df$longitude > 180)), ]
+
+
 
 
 
@@ -54,7 +56,7 @@ ui <- fluidPage(
                     'selected-text-format'="count > 4"
                   ),
                   multiple = TRUE,
-                  selected='2015'
+                  selected='2023'
       )
       
       
@@ -116,9 +118,9 @@ server <- function(input, output) {
     # add a tooltip columnn 
     df1<- df1 %>% 
       mutate(tootlip = paste0('<B>Name:</B> ',name,"<br/>",
-                             "<B>Age:</B> ", age,"<br/>",
-                             '<B>armed_with:</B> ',armed_with,"<br/>",
-                             '<B>Date:</B> ',date,"<br/>")) 
+                              "<B>Age:</B> ", age,"<br/>",
+                              '<B>armed_with:</B> ',armed_with,"<br/>",
+                              '<B>Date:</B> ',date,"<br/>")) 
     
     
     leaflet()%>% 
@@ -361,7 +363,3 @@ the highest of any city in the United States during this time frame.
 #------------------------------------------------------------------------------
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-
-
-
