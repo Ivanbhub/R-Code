@@ -56,7 +56,7 @@ ui <- fluidPage(
                     'selected-text-format'="count > 4"
                   ),
                   multiple = TRUE,
-                  selected='2023'
+                  selected=max(levels(factor(format(as.Date(df$date),"%Y"))))
       )
       
       
